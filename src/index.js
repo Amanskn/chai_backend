@@ -3,7 +3,7 @@ dotenv.config({
   path: "./.env",
 });
 
-
+// check
 import express from "express";
 import { connectDb } from "./db/connect-db.js";
 
