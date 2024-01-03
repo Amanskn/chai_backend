@@ -1,13 +1,16 @@
 import { config } from "dotenv";
 config();
 
-// console.log("test inside server.js", process.env.PORT);
+// check
+import express from "express";
 import { startServer } from "./app.js";
+
+const app = express();
 
 (async () => {
   try {
-    const returnedValue = await startServer();
-    // console.log("returnedValue", returnedValue);
+    await startServer();
+    // console.log("After server start");
   } catch (error) {
     console.log("Error in index.js:", error.message);
     process.exit(1);
