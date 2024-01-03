@@ -1,4 +1,13 @@
-import mongoose, { Schema, mongo } from "mongoose";
+import mongoose, { Schema } from "mongoose";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
+
+const {
+  ACCESS_TOKEN_SECRET,
+  ACCESS_TOKEN_EXPIRY,
+  REFRESH_TOKEN_SECRET,
+  REFRESH_TOKEN_EXPIRY,
+} = process.env;
 
 const userSchema = new Schema(
   {
@@ -17,7 +26,7 @@ const userSchema = new Schema(
       lowercase: true,
       trim: true,
     },
-    fullname: {
+    fullName: {
       type: String,
       required: true,
       trim: true,
@@ -48,6 +57,58 @@ const userSchema = new Schema(
     timestamps: true,
   }
 );
+
+userSchema.pre("save", async function (next) {
+  // Only proceed if the password is modified or new
+  if (!this.isModified("password")) return next();
+
+  try {
+    // Generate a salt
+    const salt = await bcrypt.genSalt(10);
+
+    // Hash the password along with the newly generated salt
+    const hashedPassword = await bcrypt.hash(this.password, salt);
+
+    // Replace the plain text password with the hashed password
+    this.password = hashedPassword;
+
+    next();
+  } catch (error) {
+    console.log("@@@Error inside pre hook", error.message);
+    next(error);
+  }
+});
+
+userSchema.methods.isPasswordCorrect = async function (password) {
+  return await bcrypt.compare(password, this.password);
+};
+
+userSchema.methods.generateAccessToken = function () {
+  return jwt.sign(
+    {
+      _id: this._id,
+      email: this.email,
+      fullName: this.fullName,
+      username: this.username,
+    },
+    ACCESS_TOKEN_SECRET,
+    {
+      expiresIn: ACCESS_TOKEN_EXPIRY,
+    }
+  );
+};
+
+userSchema.methods.generateRefreshToken = function () {
+  return jwt.sign(
+    {
+      _id: this._id,
+    },
+    REFRESH_TOKEN_SECRET,
+    {
+      expiresIn: REFRESH_TOKEN_EXPIRY,
+    }
+  );
+};
 
 const User = mongoose.model("User", userSchema);
 
