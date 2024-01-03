@@ -12,10 +12,10 @@ const app = express();
 (async () => {
   try {
     await startServer();
-    console.log("After server start");
+    // console.log("After server start");
   } catch (error) {
     console.log("Error in index.js:", error.message);
-    // process.exit(1);
+    process.exit(1);
   }
 })();
 

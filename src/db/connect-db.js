@@ -4,7 +4,7 @@ import { config } from "dotenv";
 
 // ============================== Since in ESM way I need to configure dotenv wherever required because it would not work by simply congifuring in index.js only
 // ================================ as it does in modulejs syntax
-// config();
+config();
 
 const { MONGO_URI } = process.env;
 
