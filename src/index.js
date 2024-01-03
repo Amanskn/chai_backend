@@ -1,27 +1,16 @@
-import dotenv from "dotenv";
-dotenv.config({
-  path: "./.env",
-});
+import { config } from "dotenv";
+config();
 
+// console.log("test inside server.js", process.env.PORT);
+import { startServer } from "./app.js";
 
-import express from "express";
-import { connectDb } from "./db/connect-db.js";
-
-const app = express()
-
-;(async () => {
+(async () => {
   try {
-    await connectDb();
-    app.on("error", (error) => {
-      console.log("Error in running server @@@:-", error.message);
-      throw error;
-    });
-    
-    app.listen(process.env.PORT, () => {
-      console.log("!!! App is listening on port", process.env.PORT);
-    });
+    const returnedValue = await startServer();
+    // console.log("returnedValue", returnedValue);
   } catch (error) {
-    console.log("Error in index.js:",error.message);
+    console.log("Error in index.js:", error.message);
+    process.exit(1);
   }
 })();
 
