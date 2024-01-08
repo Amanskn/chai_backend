@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import { connectDb } from "./db/connect-db.js";
 import { fileURLToPath } from "url";
 import path, { dirname } from "path";
+import { centralRouter } from "./routes/central.router.js";
 
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
@@ -43,19 +44,21 @@ app.use(express.static(path.join(__dirname, "..", "public/temp")));
 //   next();
 // });
 
-app.get("/test", async (req, res) => {
-  try {
-    res.status(200).json({
-      success: true,
-      msg: "all good",
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: true,
-      msg: error.message,
-    });
-  }
-});
+// app.get("/test", async (req, res) => {
+//   try {
+//     res.status(200).json({
+//       success: true,
+//       msg: "all good",
+//     });
+//   } catch (error) {
+//     res.status(500).json({
+//       success: true,
+//       msg: error.message,
+//     });
+//   }
+// });
+
+app.use("/api/v1", centralRouter);
 
 const startServer = async () => {
   return new Promise(async (resolve, reject) => {
